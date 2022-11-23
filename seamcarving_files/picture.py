@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+#hello po
 from PIL import Image
 from PyQt6.QtGui import QImage, QPixmap
 
