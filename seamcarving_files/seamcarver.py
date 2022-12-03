@@ -3,7 +3,6 @@
 from picture import Picture
 
 class SeamCarver(Picture):
-    ## TO-DO: fill in the methods below
     def energy(self, i: int, j: int) -> float:
         '''
         Return the energy of pixel at column i and row j
@@ -30,7 +29,26 @@ class SeamCarver(Picture):
         Return a sequence of indices representing the lowest-energy
         vertical seam
         '''
-        raise NotImplementedError
+        # Get the energy of all the pixels 
+        width = Picture.width(self)
+        height = Picture.height(self)
+        pixel_matrix = [[0]*width for i in range(height)]
+        dirs = [[0]*width for i in range(height)]
+
+        for i in range(height):
+            for j in range(width):
+                pixel_matrix[i][j] = self.energy(j,i)
+        last_row = pixel_matrix[height-1]
+
+        # Changing to the cumulative pixels        
+        # for i in range(width):
+        #     pixel_matrix
+        # for i in range(height-1, 1, -1):
+        #     for j in range(1, width):
+        #         j1, j2 = max(1, j-1), min(j+1, width) 
+        path = []
+        
+        return path
 
     def find_horizontal_seam(self) -> list[int]:
         '''
