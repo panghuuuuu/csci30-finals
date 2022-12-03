@@ -37,19 +37,22 @@ class SeamCarver(Picture):
         Return a sequence of indices representing the lowest-energy
         horizontal seam
         '''
+        
         raise NotImplementedError
 
     def remove_vertical_seam(self, seam: list[int]):
         '''
         Remove a vertical seam from the picture
         '''
-        raise NotImplementedError
+        if self.width()==1:
+            raise SeamError("Can't shrink the image vertically")
 
     def remove_horizontal_seam(self, seam: list[int]):
         '''
         Remove a horizontal seam from the picture
         '''
-        raise NotImplementedError
+        if self.height()==1 :
+            raise SeamError("Can't shrink the image horizontally")
 
 class SeamError(Exception):
     pass
