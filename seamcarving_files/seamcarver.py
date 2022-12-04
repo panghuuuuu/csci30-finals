@@ -28,27 +28,46 @@ class SeamCarver(Picture):
         '''
         Return a sequence of indices representing the lowest-energy
         vertical seam
-        '''
-        # Get the energy of all the pixels 
-        width = Picture.width(self)
+        '''        width = Picture.width(self)
         height = Picture.height(self)
-        pixel_matrix = [[0]*width for i in range(height)]
-        dirs = [[0]*width for i in range(height)]
-
-        for i in range(height):
-            for j in range(width):
-                pixel_matrix[i][j] = self.energy(j,i)
-        last_row = pixel_matrix[height-1]
-
-        # Changing to the cumulative pixels        
-        # for i in range(width):
-        #     pixel_matrix
-        # for i in range(height-1, 1, -1):
-        #     for j in range(1, width):
-        #         j1, j2 = max(1, j-1), min(j+1, width) 
-        path = []
+        pixel_matrix = []
         
-        return path
+        # Creating a matrix with the cumulative sum
+        for j in range(height):
+            pixel_matrix.append([])
+        for i in range(width):
+            pixel_matrix[0].append(self.energy(i, 0)) # base case - first row
+
+        # sub-problems       
+        for j in range(1, height):
+            # leftmost column
+            neighbors = [pixel_matrix[j-1][0], pixel_matrix[j-1][1]]                              
+            pixel_matrix[j].append(self.energy(0,j) + min(neighbors))
+
+            # center columns
+            for i in range(1, width-1):                                              
+                neighbors = [pixel_matrix[j-1][i-1], pixel_matrix[j-1][i], pixel_matrix[j-1][i+1]]    
+                pixel_matrix[j].append(self.energy(i,j) + min(neighbors)) 
+            
+            #  rightmost column                                                                       
+            neighbors = [pixel_matrix[j-1][i-1], pixel_matrix[j-1][i]]                           
+            pixel_matrix[j].append(self.energy(width-1,j) + min(neighbors)) 
+        
+        # last row
+        prev_index = pixel_matrix[-1].index(min(pixel_matrix[-1]))
+        indexes = [prev_index]
+        for j in range(height-2, -1, -1):
+            j1, j2 = prev_index-1, prev_index+2
+            if prev_index > 0 and prev_index < width-1:
+                neighbors = pixel_matrix[j][j1:j2]
+            elif prev_index == 0:                                    
+                neighbors = [sys.maxsize] + pixel_matrix[j][:2]        
+            else:                                                   
+                neighbors = pixel_matrix[j][j1:]               
+            
+            prev_index += neighbors.index(min(neighbors))-1
+            indexes.append(prev_index)
+        return indexes[::-1]
 
     def find_horizontal_seam(self) -> list[int]:
         '''
@@ -62,15 +81,32 @@ class SeamCarver(Picture):
         '''
         Remove a vertical seam from the picture
         '''
-        if self.width()==1:
+        width = Picture.width(self)
+        height = Picture.height(self) 
+        seam_len = len(seam)
+        if width == 1:
             raise SeamError("Can't shrink the image vertically")
+        elif width != seam_len:
+            raise SeamError("Attempted to remove seam with wrong length")
+        else: 
+            k = 0
+            for i in range(height):
+                self[i, seam[k]] = self[i, seam[k]+1]
+                del self[i, width-1]
+                k += 1
 
     def remove_horizontal_seam(self, seam: list[int]):
         '''
         Remove a horizontal seam from the picture
         '''
-        if self.height()==1 :
+        width = Picture.width(self)
+        height = Picture.height(self)
+        seam_len = len(seam)
+    
+        if height == 1:
             raise SeamError("Can't shrink the image horizontally")
+        elif height != seam_len:
+            raise SeamError("Attempted to remove seam with wrong length")
 
 class SeamError(Exception):
     pass
