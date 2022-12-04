@@ -76,9 +76,8 @@ class SeamCarver(Picture):
         horizontal seam
         '''
         sc = SeamCarver(Picture.picture(self).transpose(Image.ROTATE_90))
-        horizontal_seam = sc.find_vertical_seam()[::-1] 
-        sc = SeamCarver(Picture.picture(self))
-        return horizontal_seam
+        return sc.find_vertical_seam()[::-1] 
+         
 
     def get_pic(self):
         return Picture.picture(self)
