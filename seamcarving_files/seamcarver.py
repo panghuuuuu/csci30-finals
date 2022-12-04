@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from picture import Picture
+from PIL import Image
 import sys
 class SeamCarver(Picture):
     def energy(self, i: int, j: int) -> float:
@@ -31,6 +32,7 @@ class SeamCarver(Picture):
         '''        
         width = Picture.width(self)
         height = Picture.height(self)
+        
 
         # Create a matrix with the cumulative sum
         pixel_matrix = [[self.energy(i, 0) for i in range(width)]]
@@ -73,9 +75,14 @@ class SeamCarver(Picture):
         Return a sequence of indices representing the lowest-energy
         horizontal seam
         '''
-        
-        raise NotImplementedError
+        sc = SeamCarver(Picture.picture(self).transpose(Image.ROTATE_90))
+        horizontal_seam = sc.find_vertical_seam()[::-1] 
+        sc = SeamCarver(Picture.picture(self))
+        return horizontal_seam
 
+    def get_pic(self):
+        return Picture.picture(self)
+    
     def remove_vertical_seam(self, seam: list[int]):
         '''
         Remove a vertical seam from the picture
