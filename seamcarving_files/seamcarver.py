@@ -31,41 +31,39 @@ class SeamCarver(Picture):
         '''        
         width = Picture.width(self)
         height = Picture.height(self)
-        pixel_matrix = []
-        
-        # Creating a matrix with the cumulative sum
-        for j in range(height):
-            pixel_matrix.append([])
-        for i in range(width):
-            pixel_matrix[0].append(self.energy(i, 0)) # base case - first row
 
-        # sub-problems       
+        # Create a matrix with the cumulative sum
+        pixel_matrix = [[self.energy(i, 0) for i in range(width)]]
         for j in range(1, height):
-            # leftmost column
-            neighbors = [pixel_matrix[j-1][0], pixel_matrix[j-1][1]]                              
-            pixel_matrix[j].append(self.energy(0,j) + min(neighbors))
+            row = []
+            for i in range(width):
+                # Leftmost column
+                if i == 0:
+                    neighbors = [pixel_matrix[j-1][0], pixel_matrix[j-1][1]]
+                    row.append(self.energy(0, j) + min(neighbors))
 
-            # center columns
-            for i in range(1, width-1):                                              
-                neighbors = [pixel_matrix[j-1][i-1], pixel_matrix[j-1][i], pixel_matrix[j-1][i+1]]    
-                pixel_matrix[j].append(self.energy(i,j) + min(neighbors)) 
-            
-            #  rightmost column                                                                       
-            neighbors = [pixel_matrix[j-1][i-1], pixel_matrix[j-1][i]]                           
-            pixel_matrix[j].append(self.energy(width-1,j) + min(neighbors)) 
-        
-        # last row
+                # Center columns
+                elif i > 0 and i < width-1:
+                    neighbors = [pixel_matrix[j-1][i-1], pixel_matrix[j-1][i], pixel_matrix[j-1][i+1]]
+                    row.append(self.energy(i, j) + min(neighbors))
+
+                # Rightmost column
+                else:
+                    neighbors = [pixel_matrix[j-1][i-1], pixel_matrix[j-1][i]]
+                    row.append(self.energy(width-1, j) + min(neighbors))
+            pixel_matrix.append(row)
+
+        # Last row
         prev_index = pixel_matrix[-1].index(min(pixel_matrix[-1]))
         indexes = [prev_index]
         for j in range(height-2, -1, -1):
             j1, j2 = prev_index-1, prev_index+2
             if prev_index > 0 and prev_index < width-1:
                 neighbors = pixel_matrix[j][j1:j2]
-            elif prev_index == 0:                                    
-                neighbors = [sys.maxsize] + pixel_matrix[j][:2]        
-            else:                                                   
-                neighbors = pixel_matrix[j][j1:]               
-            
+            elif prev_index == 0:
+                neighbors = [sys.maxsize] + pixel_matrix[j][:2]
+            else:
+                neighbors = pixel_matrix[j][j1:]
             prev_index += neighbors.index(min(neighbors))-1
             indexes.append(prev_index)
         return indexes[::-1]
