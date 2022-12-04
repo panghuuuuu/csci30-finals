@@ -78,10 +78,6 @@ class SeamCarver(Picture):
         sc = SeamCarver(Picture.picture(self).transpose(Image.ROTATE_90))
         return sc.find_vertical_seam()[::-1] 
          
-
-    def get_pic(self):
-        return Picture.picture(self)
-    
     def remove_vertical_seam(self, seam: list[int]):
         '''
         Remove a vertical seam from the picture
