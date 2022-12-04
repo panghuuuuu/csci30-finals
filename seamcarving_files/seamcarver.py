@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from picture import Picture
-
+import sys
 class SeamCarver(Picture):
     def energy(self, i: int, j: int) -> float:
         '''
@@ -28,7 +28,8 @@ class SeamCarver(Picture):
         '''
         Return a sequence of indices representing the lowest-energy
         vertical seam
-        '''        width = Picture.width(self)
+        '''        
+        width = Picture.width(self)
         height = Picture.height(self)
         pixel_matrix = []
         
