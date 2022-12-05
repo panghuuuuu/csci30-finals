@@ -90,11 +90,11 @@ class SeamCarver(Picture):
         elif self._width-1 > seam_len:
             raise SeamError("Attempted to remove seam with wrong length")
         else: 
-            for i in range(height):
-                for j in range(seam[i], width-1):
-                    self[j, i] = self[j+1, i]
-                del self[width-1, i]
-            self._width = self._width - 1
+            for j in range(height):
+                for i in range(seam[j], width-1):
+                    self[i, j] = self[i+1, j]
+                del self[width-1, j]
+            self._width -= 1
 
     def remove_horizontal_seam(self, seam: list[int]):
         '''
@@ -108,8 +108,20 @@ class SeamCarver(Picture):
     
         if height == 1:
             raise SeamError("Can't shrink the image horizontally")
-        elif height != seam_len:
+        elif width != seam_len:
             raise SeamError("Attempted to remove seam with wrong length")
+        else: 
+            for i in range(width):
+                #Find which column times row to be deleted based on the seam
+                j = seam[i]
+                while j < height - 1:
+                    self[i, j] = self[i, j + 1]
+                    j += 1
+
+            for i in range(width):
+                del self[i, height - 1]
+
+            self._height -= 1
 
 class SeamError(Exception):
     pass
