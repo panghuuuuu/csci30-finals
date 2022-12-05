@@ -87,6 +87,8 @@ class SeamCarver(Picture):
         seam_len = len(seam)
         if self._width  == 1:
             raise SeamError("Can't shrink the image vertically")
+        elif self.check_invalid_seam(seam) == False:
+            raise SeamError("Invalid seam")
         elif self._width-1 > seam_len:
             raise SeamError("Attempted to remove seam with wrong length")
         else: 
@@ -100,7 +102,7 @@ class SeamCarver(Picture):
         '''
         Remove a horizontal seam from the picture
         sc = SeamCarver(Picture.picture(self).transpose(Image.ROTATE_90))
-        return sc.remove_vertical_seam()[::-1] 
+        sc.remove_vertical_seam(seam)
         '''
         width = Picture.width(self)
         height = Picture.height(self)
@@ -108,6 +110,8 @@ class SeamCarver(Picture):
     
         if height == 1:
             raise SeamError("Can't shrink the image horizontally")
+        elif self.check_invalid_seam(seam) == False:
+            raise SeamError("Invalid seam")
         elif width != seam_len:
             raise SeamError("Attempted to remove seam with wrong length")
         else: 
@@ -122,6 +126,13 @@ class SeamCarver(Picture):
                 del self[i, height - 1]
 
             self._height -= 1
+    
+    def check_invalid_seam(self, seam: list[int]):
+        for i in range(len(seam)-1):
+            x = abs(seam[i] - seam[i+1])
+            if  x > 1:
+                return False
+        return True
 
 class SeamError(Exception):
     pass
