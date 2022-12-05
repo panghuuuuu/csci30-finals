@@ -85,9 +85,9 @@ class SeamCarver(Picture):
         width = Picture.width(self)
         height = Picture.height(self) 
         seam_len = len(seam)
-        if self._width == 1:
+        if self._width  == 1:
             raise SeamError("Can't shrink the image vertically")
-        elif self._width-1 != seam_len:
+        elif self._width-1 > seam_len:
             raise SeamError("Attempted to remove seam with wrong length")
         else: 
             for i in range(height):
